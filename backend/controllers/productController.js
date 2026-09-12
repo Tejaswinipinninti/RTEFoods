@@ -339,12 +339,36 @@ exports.exportProductsCSV = async (req, res) => {
   }
 };
 
+exports.getRelatedProducts = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    const related = await Product.find({
+      _id: { $ne: product._id },
+      status: 'active',
+      $or: [
+        { category: product.category },
+        { subcategory: product.subcategory },
+        { tags: { $in: product.tags || [] } }
+      ]
+    })
+      .populate('category', 'name slug')
+      .populate('subcategory', 'name slug')
+      .limit(8);
+    res.status(200).json({ success: true, data: related });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 exports.getProduct = exports.getProductById;
 exports.getFeatured = exports.getFeaturedProducts;
 exports.getBestsellers = exports.getBestsellerProducts;
 exports.getTodaysSpecial = exports.getTodaysSpecialProducts;
 exports.getCombos = exports.getComboProducts;
-exports.getRelated = exports.getProductById;
+exports.getRelated = exports.getRelatedProducts;
 exports.bulkUpdate = exports.bulkUpdateProducts;
 exports.bulkDelete = exports.bulkDeleteProducts;
 exports.exportCSV = exports.exportProductsCSV;

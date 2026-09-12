@@ -254,7 +254,7 @@ const Home = () => {
                       <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />
                     </div>
                     <h3 className="font-poppins font-semibold text-gray-900 mb-1 text-sm sm:text-base">{cat.name}</h3>
-                    <p className="text-xs sm:text-sm text-gray-400">{cat.productCount || 0} products</p>
+                    <p className="text-xs sm:text-sm text-gray-400">{cat.productCount > 0 ? `${cat.productCount} products` : ''}</p>
                   </div>
                 </Link>
               </div>
@@ -267,18 +267,16 @@ const Home = () => {
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <SectionTitle title="Today's Specials" subtitle="Chef's handpicked selections just for you" />
         {todaysSpecials.length > 0 ? (
-          <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-            <div className="flex gap-4 sm:gap-6" style={{ minWidth: 'max-content' }}>
-              {todaysSpecials.map((product) => (
-                <div key={product._id} className="w-64 sm:w-72 flex-shrink-0 relative">
-                  <div className="absolute -top-2 -right-2 z-10 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold shadow-lg flex items-center gap-1">
-                    <Flame className="w-3 h-3" />
-                    Special
-                  </div>
-                  <ProductCard product={product} onAddToCart={handleAddToCart} onWishlist={handleWishlist} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+            {todaysSpecials.map((product) => (
+              <div key={product._id} className="relative">
+                <div className="absolute -top-2 -right-2 z-10 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold shadow-lg flex items-center gap-1">
+                  <Flame className="w-3 h-3" />
+                  Special
                 </div>
-              ))}
-            </div>
+                <ProductCard product={product} onAddToCart={handleAddToCart} onWishlist={handleWishlist} />
+              </div>
+            ))}
           </div>
         ) : (
           <p className="text-center text-gray-400 py-8">No specials available today</p>

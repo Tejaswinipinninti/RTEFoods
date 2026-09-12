@@ -129,4 +129,18 @@ exports.updateMaintenanceSettings = async (req, res) => {
 
 exports.getSettings = exports.getAllSettings;
 exports.updateSettings = exports.updateGeneralSettings;
-exports.updateSection = exports.updateGeneralSettings;
+exports.updateSection = async (req, res) => {
+  try {
+    const { section } = req.params;
+    const settings = await getSettingsDocument();
+    const allowedSections = ['general', 'seo', 'social', 'email', 'payment', 'shipping', 'tax', 'notification', 'footer', 'maintenance'];
+    if (!allowedSections.includes(section)) {
+      return res.status(400).json({ success: false, message: `Invalid section: ${section}` });
+    }
+    settings[section] = { ...settings[section], ...req.body };
+    await settings.save();
+    res.status(200).json({ success: true, data: settings, message: `${section} settings updated` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

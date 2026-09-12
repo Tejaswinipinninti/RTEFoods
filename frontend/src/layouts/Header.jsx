@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Search, User, ShoppingCart, Menu, X, ChevronDown,
-  Heart, Package, LogOut, Settings, Home
+  Heart, Package, LogOut, Settings, Home, Sun, Moon
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import useCart from '../hooks/useCart';
 import { logout } from '../redux/slices/authSlice';
+import { toggleDarkMode } from '../redux/slices/uiSlice';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -24,6 +25,7 @@ const Header = () => {
   const { user, isAuthenticated, isAdmin } = useAuth();
   const { itemCount } = useCart();
   const location = useLocation();
+  const { darkMode } = useSelector((state) => state.ui);
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -59,8 +61,8 @@ const Header = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white/90 backdrop-blur-xl shadow-lg border-b border-gray-100'
-            : 'bg-white/70 backdrop-blur-md'
+            ? 'bg-white/90 dark:bg-dark-900/90 backdrop-blur-xl shadow-lg border-b border-gray-100 dark:border-dark-700'
+            : 'bg-white/70 dark:bg-dark-900/70 backdrop-blur-md'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -105,18 +107,32 @@ const Header = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setSearchOpen(true)}
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100"
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 dark:hover:bg-dark-700"
               >
-                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
+              </motion.button>
+
+              {/* Dark Mode Toggle */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => dispatch(toggleDarkMode())}
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 dark:hover:bg-dark-700"
+              >
+                {darkMode ? (
+                  <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
+                ) : (
+                  <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                )}
               </motion.button>
 
               {/* Wishlist */}
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                 <Link
                   to={isAuthenticated ? '/wishlist' : '/login'}
-                  className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100"
+                  className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 dark:hover:bg-dark-700"
                 >
-                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
                 </Link>
               </motion.div>
 
@@ -127,7 +143,7 @@ const Header = () => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setUserDropdown(!userDropdown)}
-                    className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100"
+                    className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 dark:hover:bg-dark-700"
                   >
                     <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 flex items-center justify-center text-white text-xs sm:text-sm font-bold">
                       {user?.firstName?.[0] || 'U'}
@@ -141,33 +157,33 @@ const Header = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-52 sm:w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2"
+                        className="absolute right-0 mt-2 w-52 sm:w-56 bg-white dark:bg-dark-800 rounded-2xl shadow-xl border border-gray-100 dark:border-dark-700 overflow-hidden py-2"
                       >
-                        <div className="px-4 py-3 border-b border-gray-100">
-                          <p className="font-semibold text-gray-900 font-poppins truncate text-sm">
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-dark-700">
+                          <p className="font-semibold text-gray-900 dark:text-white font-poppins truncate text-sm">
                             {user?.firstName} {user?.lastName}
                           </p>
-                          <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
                         </div>
                         {isAdmin && (
-                          <Link to="/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors">
+                          <Link to="/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-dark-700 hover:text-orange-600 transition-colors">
                             <Settings className="w-4 h-4" />
                             Admin Panel
                           </Link>
                         )}
-                        <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors">
+                        <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-dark-700 hover:text-orange-600 transition-colors">
                           <User className="w-4 h-4" />
                           My Profile
                         </Link>
-                        <Link to="/orders" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors">
+                        <Link to="/orders" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-dark-700 hover:text-orange-600 transition-colors">
                           <Package className="w-4 h-4" />
                           My Orders
                         </Link>
-                        <Link to="/wishlist" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors">
+                        <Link to="/wishlist" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-dark-700 hover:text-orange-600 transition-colors">
                           <Heart className="w-4 h-4" />
                           Wishlist
                         </Link>
-                        <hr className="my-1 border-gray-100" />
+                        <hr className="my-1 border-gray-100 dark:border-dark-700" />
                         <button
                           onClick={() => { dispatch(logout()); setUserDropdown(false); }}
                           className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
@@ -181,16 +197,16 @@ const Header = () => {
                 </div>
               ) : (
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                  <Link to="/login" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100">
-                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  <Link to="/login" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 dark:hover:bg-dark-700">
+                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
                   </Link>
                 </motion.div>
               )}
 
               {/* Cart */}
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Link to="/cart" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 relative">
-                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                <Link to="/cart" className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 dark:hover:bg-dark-700 relative">
+                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
                   {itemCount > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
@@ -208,9 +224,9 @@ const Header = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setMobileOpen(true)}
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 lg:hidden"
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl transition-all hover:bg-gray-100 dark:hover:bg-dark-700 lg:hidden"
               >
-                <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />
               </motion.button>
             </div>
           </div>
@@ -233,7 +249,7 @@ const Header = () => {
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               className="w-full max-w-2xl"
             >
-              <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-4">
+              <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-700 p-4">
                 <form onSubmit={handleSearch} className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
@@ -241,7 +257,7 @@ const Header = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search for food items, categories..."
-                    className="w-full pl-12 pr-12 py-3 sm:py-4 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-gray-900 text-base"
+                    className="w-full pl-12 pr-12 py-3 sm:py-4 rounded-xl border border-gray-200 dark:border-dark-600 bg-white dark:bg-dark-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:focus:ring-orange-500/20 outline-none transition-all text-gray-900 dark:text-white text-base"
                     autoFocus
                   />
                   <button
@@ -285,10 +301,10 @@ const Header = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-72 max-w-[85vw] bg-white shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 z-50 w-72 max-w-[85vw] bg-white dark:bg-dark-800 shadow-2xl"
             >
-              <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                <span className="font-poppins font-bold text-lg text-gray-900">Menu</span>
+              <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-dark-700">
+                <span className="font-poppins font-bold text-lg text-gray-900 dark:text-white">Menu</span>
                 <button onClick={() => setMobileOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100">
                   <X className="w-5 h-5 text-gray-600" />
                 </button>
@@ -301,8 +317,8 @@ const Header = () => {
                     to={link.path}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-poppins font-medium transition-all ${
                       isActive(link.path)
-                        ? 'bg-orange-50 text-orange-600'
-                        : 'text-gray-600 hover:bg-gray-50'
+                        ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700'
                     }`}
                   >
                     {link.name}
@@ -310,7 +326,7 @@ const Header = () => {
                 ))}
               </nav>
 
-              <div className="p-4 border-t border-gray-100 space-y-2">
+              <div className="p-4 border-t border-gray-100 dark:border-dark-700 space-y-2">
                 {!isAuthenticated ? (
                   <>
                     <Link to="/login" className="block w-full py-3 text-center font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl shadow-lg">
@@ -322,11 +338,11 @@ const Header = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50">
+                    <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700">
                       <User className="w-5 h-5" />
                       <span className="font-poppins font-medium">My Account</span>
                     </Link>
-                    <Link to="/orders" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50">
+                    <Link to="/orders" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700">
                       <Package className="w-5 h-5" />
                       <span className="font-poppins font-medium">My Orders</span>
                     </Link>

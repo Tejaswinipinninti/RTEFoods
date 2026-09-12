@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
+const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -68,6 +69,7 @@ app.use('/api/inventory', require('./routes/inventory'));
 app.use('/api/pincodes', require('./routes/pincodes'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/payments', require('./routes/payments'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -82,27 +84,31 @@ app.use(errorHandler);
 
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  });
+
+  setInterval(() => {
+    if (mongoose.connection.readyState === 1) {
+      mongoose.connection.db.admin().ping().catch(() => {});
+    }
+  }, 30000);
+
+  process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Rejection:', err.message);
+  });
+
+  process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err.message);
+    console.error(err.stack);
+  });
+
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received. Shutting down...');
+    server.close(() => {
+      mongoose.connection.close(false).then(() => process.exit(0));
+    });
   });
 }
 
 module.exports = app;
-
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Rejection:', err.message);
-  console.error(err.stack);
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err.message);
-  console.error(err.stack);
-});
-
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
-  const mongoose = require('mongoose');
-  mongoose.connection.close(false).then(() => {
-    process.exit(0);
-  });
-});

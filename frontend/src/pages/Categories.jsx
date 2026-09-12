@@ -125,7 +125,7 @@ const Categories = () => {
                   </div>
                   <div className="p-3 sm:p-4 flex items-center justify-between">
                     <span className="text-xs sm:text-sm text-gray-500">
-                      {category.productCount || 0} products
+                      {category.productCount > 0 ? `${category.productCount} products` : ''}
                     </span>
                     <span className="text-xs sm:text-sm text-orange-600 font-medium flex items-center gap-0.5 sm:gap-1 group-hover:gap-1.5 sm:group-hover:gap-2 transition-all">
                       View All <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

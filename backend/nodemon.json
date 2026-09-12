@@ -1,0 +1,8 @@
+{
+  "watch": ["server.js", "config/", "controllers/", "routes/", "middleware/", "models/"],
+  "ext": "js,json",
+  "ignore": ["node_modules/", "utils/seeder.js"],
+  "delay": 1000,
+  "max_restarts": 50,
+  "restartable": "rs"
+}

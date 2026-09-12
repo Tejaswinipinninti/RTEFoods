@@ -30,6 +30,7 @@ const Addresses = lazy(() => import('./pages/Addresses'));
 const About = lazy(() => import('./pages/About'));
 const Contact = lazy(() => import('./pages/Contact'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminCategories = lazy(() => import('./pages/admin/AdminCategories'));
@@ -84,6 +85,7 @@ const App = () => {
             <Route path="reset-password/:token" element={<ResetPassword />} />
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
             <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
             <Route path="order-confirmation" element={<ProtectedRoute><Orders /></ProtectedRoute>} />

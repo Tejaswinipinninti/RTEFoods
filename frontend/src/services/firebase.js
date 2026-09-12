@@ -2,14 +2,14 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 
-// Default Firebase Configuration (Can be replaced with user's Firebase keys)
+// Firebase Configuration from environment variables (.env)
 const firebaseConfig = {
-  apiKey: "AIzaSyB-DemoApiKeyForRTEFoodsECommerce2026",
-  authDomain: "rte-foods.firebaseapp.com",
-  projectId: "rte-foods",
-  storageBucket: "rte-foods.appspot.com",
-  messagingSenderId: "987654321098",
-  appId: "1:987654321098:web:abcdef1234567890"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyB-DemoApiKeyForRTEFoodsECommerce2026",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "rte-foods.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "rte-foods",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "rte-foods.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "987654321098",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:987654321098:web:abcdef1234567890"
 };
 
 // Initialize Firebase App

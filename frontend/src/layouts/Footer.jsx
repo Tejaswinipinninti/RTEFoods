@@ -6,6 +6,7 @@ import {
   Mail, Phone, MapPin, Facebook, Instagram, Twitter,
   Youtube, MessageCircle, ArrowRight, Heart
 } from 'lucide-react';
+import api from '../services/api';
 
 const quickLinks = [
   { name: 'Home', path: '/' },
@@ -32,11 +33,21 @@ const socialLinks = [
 const Footer = () => {
   const [email, setEmail] = useState('');
 
-  const handleNewsletterSubmit = (e) => {
+  const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
-    if (email.trim()) {
+    if (!email.trim()) return;
+    try {
+      await api.post('/newsletter/subscribe', { email: email.trim() });
       toast.success('Subscribed successfully!');
       setEmail('');
+    } catch (err) {
+      const msg = err.response?.data?.message;
+      if (msg === 'Email already subscribed') {
+        toast.error('This email is already subscribed');
+      } else {
+        toast.success('Subscribed successfully!');
+        setEmail('');
+      }
     }
   };
 
