@@ -1,0 +1,2 @@
+build: cd frontend && npm install && npm run build
+start: cd backend && node server.js
