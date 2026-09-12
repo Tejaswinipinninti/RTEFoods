@@ -1,18 +1,16 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getApps, getApp, initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-// Firebase Configuration from environment variables (.env)
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyB-DemoApiKeyForRTEFoodsECommerce2026",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "rte-foods.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "rte-foods",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "rte-foods.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "987654321098",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:987654321098:web:abcdef1234567890"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Initialize Firebase App
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
@@ -22,9 +20,6 @@ googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 export const facebookProvider = new FacebookAuthProvider();
 
-/**
- * Save user profile data to Firebase Firestore database
- */
 export async function saveUserToFirestore(userData) {
   try {
     const safeEmail = userData.email || `${userData.uid || 'user'}_fb@facebook.com`;
@@ -42,15 +37,11 @@ export async function saveUserToFirestore(userData) {
       lastLogin: serverTimestamp(),
       updatedAt: serverTimestamp()
     }, { merge: true });
-    console.log('Saved customer to Firestore successfully!');
   } catch (error) {
-    console.warn('Firestore write notice (using fallback sync):', error.message);
+    console.warn('Firestore write skipped:', error.message);
   }
 }
 
-/**
- * Trigger Real Google OAuth Popup + Sync to Firestore
- */
 export async function signInWithGoogleReal() {
   try {
     const result = await signInWithPopup(auth, googleProvider);
@@ -69,19 +60,13 @@ export async function signInWithGoogleReal() {
       provider: 'google'
     };
 
-    // Save user data to Firestore
     await saveUserToFirestore(customerData);
-
     return customerData;
   } catch (error) {
-    console.warn('Google Popup OAuth fallback:', error.message);
     throw error;
   }
 }
 
-/**
- * Trigger Real Facebook OAuth Popup + Sync to Firestore
- */
 export async function signInWithFacebookReal() {
   try {
     const result = await signInWithPopup(auth, facebookProvider);
@@ -100,12 +85,9 @@ export async function signInWithFacebookReal() {
       provider: 'facebook'
     };
 
-    // Save user data to Firestore
     await saveUserToFirestore(customerData);
-
     return customerData;
   } catch (error) {
-    console.warn('Facebook Popup OAuth fallback:', error.message);
     throw error;
   }
 }
