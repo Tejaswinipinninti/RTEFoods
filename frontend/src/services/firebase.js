@@ -27,10 +27,12 @@ export const facebookProvider = new FacebookAuthProvider();
  */
 export async function saveUserToFirestore(userData) {
   try {
-    const userDocRef = doc(db, 'users', userData.uid || userData.email.replace(/[@.]/g, '_'));
+    const safeEmail = userData.email || `${userData.uid || 'user'}_fb@facebook.com`;
+    const docId = userData.uid || safeEmail.replace(/[@.]/g, '_');
+    const userDocRef = doc(db, 'users', docId);
     await setDoc(userDocRef, {
       uid: userData.uid || '',
-      email: userData.email,
+      email: safeEmail,
       firstName: userData.firstName || 'Customer',
       lastName: userData.lastName || 'User',
       displayName: `${userData.firstName} ${userData.lastName}`.trim(),
@@ -56,13 +58,14 @@ export async function signInWithGoogleReal() {
     const nameParts = (user.displayName || 'Google Customer').split(' ');
     const firstName = nameParts[0] || 'Google';
     const lastName = nameParts.slice(1).join(' ') || 'User';
+    const email = user.email || `${user.uid}@gmail.com`;
 
     const customerData = {
       uid: user.uid,
-      email: user.email,
+      email,
       firstName,
       lastName,
-      avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
+      avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
       provider: 'google'
     };
 
@@ -86,13 +89,14 @@ export async function signInWithFacebookReal() {
     const nameParts = (user.displayName || 'Facebook Customer').split(' ');
     const firstName = nameParts[0] || 'Facebook';
     const lastName = nameParts.slice(1).join(' ') || 'User';
+    const email = user.email || `${user.uid || 'fb_user'}@facebook.com`;
 
     const customerData = {
       uid: user.uid,
-      email: user.email,
+      email,
       firstName,
       lastName,
-      avatar: user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
+      avatar: user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
       provider: 'facebook'
     };
 
